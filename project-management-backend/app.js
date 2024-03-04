@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const projectRoutes = require('./src/routes/projectRoutes');
+const authRoutes = require('./src/routes/authRoutes');
 const sequelize = require('./src/config/database');
 
 // Load environment variables
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 // Routes
+app.use('/api', authRoutes);
 app.use('/api/projects', projectRoutes);
 
 // Error handling middleware
