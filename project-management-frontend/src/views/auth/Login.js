@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login, setLoading, setError } from "./store/authSlice";
 
 const Login = ({setLogin}) => {
-
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
   });
-  const [error, setError] = useState("");
+  const [error, setErrors] = useState("");
   // const history = useHistory();
 
   const handleChange = (e) => {
@@ -17,6 +19,7 @@ const Login = ({setLogin}) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
+      dispatch(setLoading());
       const response = await fetch("http://localhost:5000/api/login", {
         method: "POST",
         headers: {
@@ -26,16 +29,18 @@ const Login = ({setLogin}) => {
       });
       if (!response.ok) {
         const errorData = await response.json();
+        dispatch(setError(errorData.message));
         throw new Error(errorData.message);
       }
       const data = await response.json();
+      dispatch(login(data.user));
       setLogin(true)
       // Store authentication token in local storage or session storage
       localStorage.setItem("token", data.token);
       // Redirect user to dashboard or desired page
       // history.push("/dashboard");
     } catch (error) {
-      setError(error.message);
+      setErrors(error.message);
     }
   };
   return (

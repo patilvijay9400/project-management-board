@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import Toaster from "../components/ui/Toaster";
+import Toaster from "../../components/ui/Toaster";
+import { useDispatch } from "react-redux";
+import { signup } from "./store/authSlice";
 
 const Signup = () => {
-  const [signup, setSignup] = useState(false)
+  const [signup, setSignup] = useState(false);
+  const dispatch = useDispatch();
 
   // register with username, email, role and password
   const [formData, setFormData] = useState({
@@ -18,7 +21,6 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
-  debugger
   e.preventDefault();
     try {
       const response = await fetch("http://localhost:5000/api/signup", {
@@ -32,6 +34,7 @@ const Signup = () => {
         // User successfully signed up
         console.log(await response.json());
         setSignup(true);
+        dispatch(signup(formData));
         setTimeout(() => { setSignup(false) }, 3000);
         // set formData will be empty
         document.getElementById('signup_form').reset()

@@ -12,8 +12,8 @@ const Header = () => {
   }
   const navigation = [
     { name: 'Dashboard', path: '/', current: true, onClick: () => updateTabs('Dashboard') },
-    { name: 'Team', path: '/team', current: false, onClick: () => updateTabs('Team') },
     { name: 'Projects', path: '/projects', current: false, onClick: () => updateTabs('Projects') },
+    { name: 'Team', path: '/team', current: false, onClick: () => updateTabs('Team') },
     { name: 'Tasks', path: '/tasks', current: false, onClick: () => updateTabs('Tasks') },
     { name: 'Reports', path: '/reports', current: false, onClick: () => updateTabs('Reports') },
   ];

@@ -13,7 +13,6 @@ const signup = async (req, res) => {
 
     console.log("user body=", { username, email, password, role });
     // check if user with email is already existing
-    //   const existingUser = User.findOne({ where: { email } });
     const existingUser = await User.findOne({ where: { email } });
     console.log("existingUser=", existingUser);
     if (existingUser) {
