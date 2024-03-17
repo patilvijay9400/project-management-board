@@ -6,13 +6,15 @@ const initialState = {
   projects: [],
   loading: false,
   error: null,
+  currentPage: 1,
+  totalPages: 1,
 };
 
 // Define thunk for fetching projects
 export const fetchProjects = createAsyncThunk(
   'projects/fetchProjects',
-  async () => {
-    const response = await axios.get('http://localhost:5000/api/projects');
+  async ({ page = 1, pageSize = 10 }) => {
+    const response = await axios.get(`http://localhost:5000/api/projects?page=${page}&pageSize=${pageSize}`);
     return response.data;
   }
 );
@@ -36,6 +38,7 @@ export const deleteProject = createAsyncThunk(
 );
 
 // Define thunk for updating a project
+debugger
 export const updateProject = createAsyncThunk(
   'projects/updateProject',
   async (projectData) => {
@@ -49,7 +52,11 @@ export const updateProject = createAsyncThunk(
 const projectsSlice = createSlice({
   name: 'projects',
   initialState,
-  reducers: {},
+  reducers: {
+    setCurrentPage(state, action) {
+      state.currentPage = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Handle fetchProjects pending and fulfilled actions
@@ -60,6 +67,7 @@ const projectsSlice = createSlice({
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.loading = false;
         state.projects = action.payload;
+        state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loading = false;

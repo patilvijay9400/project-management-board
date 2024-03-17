@@ -2,6 +2,7 @@ import React from "react";
 
 const Table = ({ data, columns }) => {
   // format date like yyyy, mm ,day
+  console.log("data=>", data)
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString("en-US", options);

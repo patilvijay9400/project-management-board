@@ -1,7 +1,7 @@
 import React, { Fragment, useState } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 const Header = () => {
   const user = {
@@ -11,11 +11,11 @@ const Header = () => {
       'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
   }
   const navigation = [
-    { name: 'Dashboard', path: '/', current: true, onClick: () => updateTabs('Dashboard') },
-    { name: 'Projects', path: '/projects', current: false, onClick: () => updateTabs('Projects') },
-    { name: 'Team', path: '/team', current: false, onClick: () => updateTabs('Team') },
-    { name: 'Tasks', path: '/tasks', current: false, onClick: () => updateTabs('Tasks') },
-    { name: 'Reports', path: '/reports', current: false, onClick: () => updateTabs('Reports') },
+    { name: 'Dashboard', path: '/', current: true },
+    { name: 'Projects', path: '/projects', current: false },
+    { name: 'Team', path: '/team', current: false },
+    { name: 'Tasks', path: '/tasks', current: false },
+    { name: 'Reports', path: '/reports', current: false, },
   ];
   const userNavigation = [
     { name: 'Your Profile', href: '#' },
@@ -57,20 +57,15 @@ const Header = () => {
                     <div className="hidden md:block">
                       <div className="ml-10 flex items-baseline space-x-4">
                         {tabs.map((item) => (
-                          <Link
+                          <NavLink
                             key={item.name}
                             to={item.path}
                             onClick={item.onClick}
                             aria-current={item.current ? 'page' : undefined}
-                            className={classNames(
-                              item.current
-                                ? 'bg-gray-900 text-white'
-                                : 'text-gray-300 hover:bg-gray-700 hover:text-white',
-                              'rounded-md px-3 py-2 text-sm font-medium'
-                            )}
+                            className='text-gray-300 hover:bg-gray-700 hover:text-white rounded-md px-3 py-2 text-sm font-medium'
                           >
                             {item.name}
-                          </Link>
+                          </NavLink>
                         ))}
                       </div>
                     </div>

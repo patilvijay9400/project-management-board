@@ -2,9 +2,18 @@ const Project = require("../models/project");
 
 // get all projects
 const getAllProjects = async (req, res) => {
+  const { page = 1, pageSize = 10 } = req.query;
+  const offset = (page - 1) * pageSize;
   try {
-    const projects = await Project.findAll();
-    res.json(projects);
+    const totalCount = await Project.count(); // Get total count of projects
+    const totalPages = Math.ceil(totalCount / pageSize); // Calculate total pages
+    const projects = await Project.findAll({
+      offset,
+      limit: pageSize,
+      order: [['id', 'DESC']] // Order by ID in descending order
+    });
+    console.log({ projects, totalPages })
+    res.json({ projects, totalPages });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

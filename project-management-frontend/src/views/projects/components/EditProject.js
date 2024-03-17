@@ -1,12 +1,12 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import dayjs from "dayjs";
 import DatePicker from "react-datepicker";
-import { useDispatch } from "react-redux";
-import { addProject } from "../store/projectsSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { addProject, updateProject } from "../store/projectsSlice";
 import "react-datepicker/dist/react-datepicker.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const people = [
   {
@@ -39,19 +39,42 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const AddProjects = () => {
-  const dispatch = useDispatch();
+const EditProject = () => {
+  const { id } = useParams();
+  // Convert the string id into a number
+  let numId = parseInt(id);
   const navigate = useNavigate();
-  const [selected, setSelected] = useState(people[1]);
-  console.log("assigned to=", selected);
+  const dispatch = useDispatch();
+  const [selected, setSelected] = useState(people[0]); // Initialize with the first person object
+  const project = useSelector((state) =>
+    state.projects.projects.find((p) => p.id === numId)
+  );
+
   const [formData, setFormData] = useState({
     title: "",
     priority: "",
-    assigned_to: selected.name,
-    start_date: dayjs().format("YYYY-MM-DD"),
-    end_date: dayjs().format("YYYY-MM-DD"),
-    description: "",
+    assigned_to: selected.name, // Initialize with the name of the first person
+    start_date: "",
+    end_date: "",
   });
+
+  useEffect(() => {
+    if (project) {
+      setFormData({
+        title: project.title,
+        priority: project.priority,
+        assigned_to: project.assigned_to,
+        start_date: project.start_date,
+        end_date: project.end_date,
+      });
+      // Find the person object based on the assigned_to value from project
+      const person = people.find((p) => p.name === project.assigned_to);
+      setSelected(person || people[0]); // If person not found, fallback to the first person object
+    } else {
+      // Fetch project details by ID if not available in the state
+      dispatch(updateProject(id));
+    }
+  }, [dispatch, id, project]);
 
   const handleDateChange = (date, name) => {
     setFormData({ ...formData, [name]: date });
@@ -59,34 +82,36 @@ const AddProjects = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === "assigned_to") {
+      // Find the person object based on the selected value
+      const person = people.find((p) => p.name === value);
+      setSelected(person || people[0]); // If person not found, fallback to the first person object
+      setFormData({ ...formData, [name]: value }); // Update formData with the selected person's name
+    } else {
+      setFormData({ ...formData, [name]: value }); // For other fields, update formData directly
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Dispatch addProject action with formData
-      dispatch(addProject(formData));
-      navigate("/projects");
-      // Reset form after successful submission
-      setFormData({
-        title: "",
-        priority: "",
-        assigned_to: selected.name,
-        start_date: dayjs().format("YYYY-MM-DD"),
-        end_date: dayjs().format("YYYY-MM-DD"),
-        description: "",
-      });
+      // Dispatch updateProject action with formData
+      dispatch(updateProject({ id, ...formData, assigned_to: selected.name }));
+      // if success then navigate to projectList
+      navigate("/projects")
+      // Redirect or handle success accordingly
     } catch (error) {
-      console.error("Error adding project:", error);
+      console.error("Error updating project:", error);
     }
   };
+
   return (
     <div>
       <header className="bg-white shadow">
         <div className="px-4 py-6 lg:px-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            Add Projects
+            Edit Projects
           </h1>
         </div>
       </header>
@@ -263,29 +288,13 @@ const AddProjects = () => {
                 placeholderText="Select a date"
               />
             </div>
-            <div className="">
-              <label
-                htmlFor="description"
-                className="block font-medium text-gray-700 mb-1"
-              >
-                Description
-              </label>
-              <textarea
-                name="description"
-                placeholder="project description"
-                value={formData.description}
-                onChange={handleChange}
-              >
-                description
-              </textarea>
-            </div>
           </div>
           <div className="mt-5">
             <button
               type="submit"
               className="px-3 py-1 bg-gray-800 rounded text-white"
             >
-              Add project
+              Edit project
             </button>
           </div>
         </form>
@@ -294,4 +303,4 @@ const AddProjects = () => {
   );
 };
 
-export default AddProjects;
+export default EditProject;

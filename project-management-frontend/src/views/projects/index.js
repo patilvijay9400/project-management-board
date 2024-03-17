@@ -6,14 +6,20 @@ import { MdDelete } from "react-icons/md";
 import Tooltip from "@mui/material/Tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteProject, fetchProjects } from "./store/projectsSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import CustomPagination from "../../components/ui/CustomPagination";
 
 const Projects = () => {
   // get all projects api
   // const [projects, setProjects] = useState([]);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const projects = useSelector((state) => state.projects.projects);
   const loading = useSelector((state) => state.projects.loading);
+  const totalPages = useSelector((state) => state.projects.totalPages);
+  console.log("projects=>", projects)
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // const fetchData = async () => {
   //   try {
@@ -27,11 +33,12 @@ const Projects = () => {
   // };
 
   useEffect(() => {
-    dispatch(fetchProjects());
-  }, [dispatch]);
+    dispatch(fetchProjects({ page: currentPage, pageSize }));
+  }, [dispatch, currentPage, pageSize]);
+  
   const onEdit = (projectId) => {
-    // Perform the desired action based on the project ID
-    console.log(`Perform action for project with ID ${projectId}`);
+    // edit project by id
+    navigate(`/projects/${projectId}`);
   };
   const onView = (projectId) => {
     // Perform the desired action based on the project ID
@@ -42,6 +49,11 @@ const Projects = () => {
       dispatch(deleteProject(projectId));
     }
   };
+
+  const onPageChange = (page) => {
+    setCurrentPage(page);
+  };
+
   const columns = [
     { key: "id", title: "ID" },
     { key: "title", title: "Title" },
@@ -100,7 +112,12 @@ const Projects = () => {
         </div>
       </header>
       <main className="px-4 lg:px-8 py-4">
-        <Table data={projects} columns={columns} />
+        <Table data={projects.projects} columns={columns} />
+        <CustomPagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={onPageChange}
+        />
       </main>
     </div>
   );

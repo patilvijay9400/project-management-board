@@ -10,3 +10,6 @@ body{
 .react-datepicker-wrapper{
     width: 100%;
 }
+.items-baseline a.active{
+    @apply bg-gray-900 text-white;
+}
